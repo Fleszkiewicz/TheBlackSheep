@@ -78,6 +78,7 @@ export interface GetTripsQueryDTO {
   page?: number;
   month?: number;
   year?: number;
+  search?: string;
 }
 
 export interface PaginatedTripsResponseDTO {

@@ -40,6 +40,7 @@ export class TripsController {
 
       const month = parseOptionalInt(req.query.month as string, 1, 12);
       const year = parseOptionalInt(req.query.year as string, 2000, 2100);
+      const search = (req.query.search as string) || undefined;
 
       const query: GetTripsQueryDTO = {
         filter: filter ?? undefined,
@@ -47,6 +48,7 @@ export class TripsController {
         page,
         month: month ?? undefined,
         year: year ?? undefined,
+        search,
       };
 
       const result = await this.tripService.getTrips(query);

@@ -20,12 +20,13 @@ export class TripRepository implements ITripRepository {
     offset: number,
     month: number | null,
     year: number | null,
+    search: string | null,
     conn?: PoolConnection,
   ): Promise<StoredProcedureResultWithTotal<TripResponseDTO>> {
     // Execute SP
     const results = await QueryExecutor.executeStoredProcedure<any>(
       "obtener_viajes",
-      [filter, limit, offset, month, year],
+      [filter, limit, offset, month, year, search],
       { expectResultSets: true },
       conn,
     );
