@@ -43,3 +43,6 @@ coverage/
 # Temporal
 *.tmp
 *.temp
+# Local Pi runtime state
+.atl/
+/src/scripts

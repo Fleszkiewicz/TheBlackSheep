@@ -71,12 +71,18 @@ export const httpLogger = (
 
 /**
  * Middleware para sanitizar y log de request body (no loguear passwords)
+ * SOLO EN DESARROLLO - deshabilitado en producción para ahorrar logs
  */
 export const logRequestBody = (
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
+  // Solo loguear en desarrollo
+  if (process.env.NODE_ENV !== "development") {
+    return next();
+  }
+
   if (req.body && Object.keys(req.body).length > 0) {
     // Clonar body y sanitizar campos sensibles
     const sanitizedBody = { ...req.body };

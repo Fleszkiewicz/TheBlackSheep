@@ -104,18 +104,33 @@ transports.push(
   })
 );
 
-// File transport - Solo HTTP requests (con rotación diaria)
-transports.push(
-  new DailyRotateFile({
-    filename: "logs/http-%DATE%.log",
-    datePattern: "YYYY-MM-DD",
-    level: "http",
-    format: fileFormat,
-    maxSize: "20m",
-    maxFiles: "7d", // HTTP logs solo 7 días
-    zippedArchive: true,
-  })
-);
+// File transport - Solo HTTP errors/warnings (prod only)
+if (config.NODE_ENV === "production") {
+  transports.push(
+    new DailyRotateFile({
+      filename: "logs/http-errors-%DATE%.log",
+      datePattern: "YYYY-MM-DD",
+      level: "warn",
+      format: fileFormat,
+      maxSize: "10m",
+      maxFiles: "3d", // Logs solo 3 días en prod
+      zippedArchive: true,
+    })
+  );
+} else {
+  // Dev: registrar todos los HTTP
+  transports.push(
+    new DailyRotateFile({
+      filename: "logs/http-%DATE%.log",
+      datePattern: "YYYY-MM-DD",
+      level: "http",
+      format: fileFormat,
+      maxSize: "20m",
+      maxFiles: "7d",
+      zippedArchive: true,
+    })
+  );
+}
 
 // Crear el logger
 export const logger = winston.createLogger({
@@ -147,7 +162,7 @@ logger.dev = (message: string, meta?: any) => {
   }
 };
 
-// Método para logging de base de datos
+// Método para logging de base de datos (solo en desarrollo)
 logger.db = (query: string, duration?: number, meta?: any) => {
   const logData = {
     query,
@@ -157,9 +172,8 @@ logger.db = (query: string, duration?: number, meta?: any) => {
 
   if (config.NODE_ENV === "development") {
     logger.debug("DB Query", logData);
-  } else {
-    logger.info("DB Query", logData);
   }
+  // En producción: no loguear queries
 };
 
 // Método para logging de requests HTTP
@@ -182,7 +196,8 @@ logger.request = (
     logger.error("HTTP Request Error", logData);
   } else if (statusCode >= 400) {
     logger.warn("HTTP Request Warning", logData);
-  } else {
+  } else if (config.NODE_ENV === "development") {
+    // En producción: solo registrar errores y warnings
     logger.http("HTTP Request", logData);
   }
 };

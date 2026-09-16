@@ -16,6 +16,21 @@ import logger from "./logger.config";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import { setupSwagger } from "./swagger.config";
+import { db } from "../db/db";
+
+export async function warmupDatabase(): Promise<void> {
+  try {
+    logger.info("🔥 Warming up database pool...");
+    const conn = await db.getConnection();
+    await conn.query("SELECT 1");
+    conn.release();
+    logger.info("✅ Database pool warmed up successfully");
+  } catch (error) {
+    logger.warn("⚠️  Database pool warmup failed (non-blocking)", {
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
 
 export const app = express();
 
@@ -41,7 +56,7 @@ app.use(
         throw new Error("JSON inválido");
       }
     },
-  })
+  }),
 );
 
 app.use(
@@ -49,7 +64,7 @@ app.use(
     extended: true,
     limit: "10mb",
     parameterLimit: 1000,
-  })
+  }),
 );
 
 // ✅ Log request body en desarrollo (después de parsear JSON)
@@ -60,13 +75,9 @@ if (config.NODE_ENV === "development") {
 // ✅ CORS configurado
 app.use(
   cors({
-    origin: [
-      config.CLIENT_URL,
-      "https://www.theblacksheeptravel.com",
-      "https://theblacksheeptravel.com",
-    ],
+    origin: config.CLIENT_URL!,
     credentials: true,
-  })
+  }),
 );
 
 app.use(cookieParser());
@@ -84,7 +95,7 @@ app.use(
     },
     level: 6,
     threshold: 1024,
-  })
+  }),
 );
 
 export const limiter = rateLimit({
@@ -95,7 +106,7 @@ export const limiter = rateLimit({
   legacyHeaders: false,
   handler: (req, res, next, options) => {
     logger.error(
-      `Rate limit excedido para ${req.ip}. Petición bloqueada: ${req.method} ${req.originalUrl}`
+      `Rate limit excedido para ${req.ip}. Petición bloqueada: ${req.method} ${req.originalUrl}`,
     );
     res.status(options.statusCode).send(options.message);
   },
