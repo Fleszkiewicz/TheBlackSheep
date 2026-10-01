@@ -56,14 +56,22 @@ const router = Router();
  *         $ref: '#/components/responses/ServerError'
  */
 router.get(
-  "/callback",
+  "/google",
   passport.authenticate("google", {
     scope: ["profile", "email"],
+    prompt: "select_account",
+    session: false,
+  }),
+);
+
+router.get(
+  "/callback",
+  passport.authenticate("google", {
     failureRedirect: `/api/auth/failure`,
     failureMessage: true,
     session: false,
   }),
-  login
+  login,
 );
 
 /**

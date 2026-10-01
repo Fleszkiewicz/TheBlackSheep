@@ -16,7 +16,9 @@ export function configurePassport(): void {
       },
       async (_accessToken, _refreshToken, profile, done) => {
         try {
-          const authenticateEmail = profile.emails?.[0].value;
+          const authenticateEmail = profile.emails?.[0].value
+            ?.trim()
+            .toLowerCase();
           const avatar = profile.photos?.[0]?.value ?? "";
 
           if (!authenticateEmail) {
@@ -59,7 +61,7 @@ export function configurePassport(): void {
           });
           return done(null, false);
         }
-      }
-    )
+      },
+    ),
   );
 }
