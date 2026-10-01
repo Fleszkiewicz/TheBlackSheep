@@ -101,14 +101,6 @@ export class QueryExecutor {
 
       // Si espera múltiples result sets
       if (options.expectResultSets) {
-        //log temporal para debbugin
-        logger.info("ResultSets structure:", {
-          isArray: Array.isArray(resultSets),
-          length: Array.isArray(resultSets) ? resultSets.length : 0,
-          firstElementIsArray: Array.isArray(resultSets?.[0]),
-          secondElementIsArray: Array.isArray(resultSets?.[1] ?? null),
-        });
-
         return resultSets as T;
       }
 

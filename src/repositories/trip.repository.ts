@@ -8,6 +8,7 @@ import {
 } from "../dtos/trip.dto";
 import { QueryExecutor } from "../core/QueryExecutor";
 import { StoredProcedureResultWithTotal } from "../interfaces/repository.interface";
+import logger from "../config/logger.config";
 
 export class TripRepository implements ITripRepository {
   async getConnection(): Promise<PoolConnection> {
@@ -61,8 +62,11 @@ export class TripRepository implements ITripRepository {
 
       return { data, total };
     } catch (error) {
-      console.error("Error parsing getTrips results:", error);
-      console.error("Results structure:", JSON.stringify(results, null, 2));
+      logger.error("Failed to parse getTrips results", {
+        error: error instanceof Error ? error.message : String(error),
+        resultType: typeof results,
+        resultSample: JSON.stringify(results).substring(0, 200),
+      });
       // Return empty valid structure instead of failing
       return { data: [], total: 0 };
     }

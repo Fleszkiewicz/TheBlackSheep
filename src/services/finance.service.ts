@@ -42,7 +42,7 @@ export class FinanceService {
       query.anio,
       query.moneda ?? null
     );
-    console.log(summary);
+    
     const data = summaryResponse(summary);
 
     return data;

@@ -67,17 +67,25 @@ const fileFormat = winston.format.combine(
   winston.format.json()
 );
 
+// Formato para logs en consola en producción (JSON)
+const productionConsoleFormat = winston.format.combine(
+  winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+  winston.format.json()
+);
+
 // Transports para diferentes tipos de logs
 const transports: winston.transport[] = [];
 
-// Console transport (solo en desarrollo)
-if (config.NODE_ENV === "development") {
-  transports.push(
-    new winston.transports.Console({
-      format: consoleFormat,
-    })
-  );
-}
+// Console transport - SIEMPRE activo (colores en dev, JSON en prod)
+const consoleTransportFormat =
+  config.NODE_ENV === "development" ? consoleFormat : productionConsoleFormat;
+
+transports.push(
+  new winston.transports.Console({
+    format: consoleTransportFormat,
+    level: config.NODE_ENV === "production" ? "warn" : "debug",
+  })
+);
 
 // File transport - Errores (con rotación diaria)
 transports.push(
@@ -162,18 +170,22 @@ logger.dev = (message: string, meta?: any) => {
   }
 };
 
-// Método para logging de base de datos (solo en desarrollo)
+// Método para logging de base de datos (con filtro de slow queries)
 logger.db = (query: string, duration?: number, meta?: any) => {
-  const logData = {
-    query,
-    ...(duration && { duration: `${duration}ms` }),
-    ...meta,
-  };
+  // Solo loguear en desarrollo o si la query tarda más de 500ms
+  const shouldLog =
+    config.NODE_ENV === "development" || (duration && duration > 500);
 
-  if (config.NODE_ENV === "development") {
+  if (shouldLog) {
+    const logData = {
+      query,
+      ...(duration && { duration: `${duration}ms` }),
+      ...meta,
+    };
+
     logger.debug("DB Query", logData);
   }
-  // En producción: no loguear queries
+  // En producción con queries rápidas: no loguear
 };
 
 // Método para logging de requests HTTP
@@ -197,7 +209,7 @@ logger.request = (
   } else if (statusCode >= 400) {
     logger.warn("HTTP Request Warning", logData);
   } else if (config.NODE_ENV === "development") {
-    // En producción: solo registrar errores y warnings
+    // En desarrollo: registrar éxitos 2xx; en producción: omitir
     logger.http("HTTP Request", logData);
   }
 };

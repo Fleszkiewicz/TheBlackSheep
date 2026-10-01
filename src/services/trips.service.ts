@@ -68,8 +68,9 @@ export class TripService {
       search,
     );
 
+    logger.info("Trips fetched successfully", { count: data.length });
+
     const pagination = ResponseBuilder.buildPagination(page, limit, total);
-    console.log(data);
     return {
       data,
       pagination,
