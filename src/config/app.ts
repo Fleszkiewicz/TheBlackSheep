@@ -37,6 +37,9 @@ export const app = express();
 // ✅ Configurar Swagger
 setupSwagger(app);
 
+// ✅ Configurar cabeceras de seguridad
+app.set("trust proxy", 1);
+
 app.use(helmet());
 // ✅ Logger HTTP debe ir primero para capturar todas las requests
 app.use(httpLogger);
