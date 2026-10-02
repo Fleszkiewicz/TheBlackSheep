@@ -1,5 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
+import config from "../config/config";
 import {
   failure,
   login,
@@ -64,15 +65,31 @@ router.get(
   }),
 );
 
-router.get(
-  "/callback",
-  passport.authenticate("google", {
-    failureRedirect: `/api/auth/failure`,
-    failureMessage: true,
-    session: false,
-  }),
-  login,
-);
+router.get("/callback", (req, res, next) => {
+  passport.authenticate(
+    "google",
+    { session: false },
+    (err: any, user: any, info: any) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        const rejectedEmail =
+          info?.message &&
+          info.message !== "No email provided" &&
+          info.message !== "unauthorized"
+            ? info.message
+            : "";
+        const redirectUrl = rejectedEmail
+          ? `${config.CLIENT_URL}/failure?email=${encodeURIComponent(rejectedEmail)}`
+          : `${config.CLIENT_URL}/failure`;
+        return res.redirect(redirectUrl);
+      }
+      req.user = user;
+      return login(req, res, next);
+    },
+  )(req, res, next);
+});
 
 /**
  * @swagger

@@ -23,4 +23,19 @@ export class UserService {
 
     return user;
   }
+
+  /**
+   * Obtener usuario buscando en una lista de emails posibles
+   */
+  async getUserByEmails(emails: string[]): Promise<UserDTO> {
+    logger.info("Fetching user by emails", { emails });
+
+    const user = await this.userRepository.findByEmails(emails);
+
+    if (!user) {
+      throw ErrorFactory.notFound("Usuario no encontrado");
+    }
+
+    return user;
+  }
 }

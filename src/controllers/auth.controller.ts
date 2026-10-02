@@ -108,11 +108,15 @@ export async function failure(
   next: NextFunction
 ): Promise<void> {
   try {
+    const emailParam = req.query.email
+      ? `?email=${encodeURIComponent(String(req.query.email))}`
+      : "";
     logger.warn("Authentication failure", {
       ip: req.ip,
+      email: req.query.email,
       userAgent: req.get("user-agent"),
     });
-    res.redirect(`${config.CLIENT_URL}/failure`);
+    res.redirect(`${config.CLIENT_URL}/failure${emailParam}`);
   } catch (error) {
     next(error);
   }

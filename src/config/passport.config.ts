@@ -15,28 +15,22 @@ export function configurePassport(): void {
         callbackURL: config.GOOGLE_CALLBACK,
       },
       async (_accessToken, _refreshToken, profile, done) => {
+        let candidateEmails: string[] = [];
         try {
-          const authenticateEmail = profile.emails?.[0].value
-            ?.trim()
-            .toLowerCase();
+          candidateEmails = (profile.emails || [])
+            .map((e) => e.value?.trim().toLowerCase())
+            .filter((e): e is string => Boolean(e));
           const avatar = profile.photos?.[0]?.value ?? "";
 
-          if (!authenticateEmail) {
+          if (candidateEmails.length === 0) {
             logger.warn("Google authentication failed - no email provided", {
               profileId: profile.id,
             });
-            return done(null, false);
+            return done(null, false, { message: "No email provided" });
           }
 
-          // Usar servicio para obtener usuario
-          const user = await userService.getUserByEmail(authenticateEmail);
-
-          if (!user) {
-            logger.warn("User not found in database", {
-              email: authenticateEmail,
-            });
-            return done(null, false);
-          }
+          // Usar servicio para obtener usuario buscando por cualquiera de los emails devueltos por Google
+          const user = await userService.getUserByEmails(candidateEmails);
 
           const { nombre, email } = user;
 
@@ -51,15 +45,21 @@ export function configurePassport(): void {
 
           logger.info("Google authentication successful", {
             email,
+            candidateEmails,
           });
 
           return done(null, { user, accessToken, refreshToken });
         } catch (error) {
-          logger.error("Google authentication error", {
+          logger.error("Google authentication error - user lookup failed", {
+            candidateEmails,
+            primaryEmail: profile.emails?.[0]?.value,
+            allProfileEmails: profile.emails,
             error: error instanceof Error ? error.message : "Unknown error",
             stack: error instanceof Error ? error.stack : undefined,
           });
-          return done(null, false);
+          return done(null, false, {
+            message: candidateEmails[0] || "unauthorized",
+          });
         }
       },
     ),

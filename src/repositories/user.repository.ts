@@ -15,9 +15,30 @@ export class UserRepository {
     email: string,
     conn?: PoolConnection
   ): Promise<UserDTO | null> {
+    const cleanEmail = email.trim().toLowerCase();
     const result = await QueryExecutor.executeSelectOne<UserDTO>(
-      "SELECT * FROM usuario u WHERE u.email = ?",
-      [email],
+      "SELECT * FROM usuario u WHERE LOWER(TRIM(u.email)) = ?",
+      [cleanEmail],
+      conn
+    );
+
+    return result;
+  }
+
+  async findByEmails(
+    emails: string[],
+    conn?: PoolConnection
+  ): Promise<UserDTO | null> {
+    if (!emails || emails.length === 0) return null;
+    const cleanEmails = emails
+      .map((e) => e?.trim().toLowerCase())
+      .filter((e): e is string => Boolean(e));
+    if (cleanEmails.length === 0) return null;
+
+    const placeholders = cleanEmails.map(() => "?").join(",");
+    const result = await QueryExecutor.executeSelectOne<UserDTO>(
+      `SELECT * FROM usuario u WHERE LOWER(TRIM(u.email)) IN (${placeholders}) LIMIT 1`,
+      cleanEmails,
       conn
     );
 
