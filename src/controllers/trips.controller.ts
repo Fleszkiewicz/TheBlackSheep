@@ -5,6 +5,7 @@ import {
   parseStringOrNumber,
   validateDate,
   validateDateRange,
+  parseOptionalString,
 } from "../utils/validation";
 import { ErrorFactory } from "../errors/errorFactory";
 import {
@@ -24,7 +25,7 @@ export class TripsController {
   ): Promise<void> => {
     try {
       const filter = parseStringOrNumber(req.query.filter);
-
+      const search = parseOptionalString(req.query.search);
       const limit = Math.min(
         Math.max(
           parseInt(req.query.limit as string) || PAGINATION.DEFAULT_LIMIT,
@@ -47,6 +48,7 @@ export class TripsController {
         page,
         month: month ?? undefined,
         year: year ?? undefined,
+        search: search ?? undefined,
       };
 
       const result = await this.tripService.getTrips(query);
