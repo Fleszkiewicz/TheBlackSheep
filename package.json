@@ -7,7 +7,9 @@
     "dev:dev": "tsx watch src/index.ts --mode dev",
     "dev:prod": "tsx watch src/index.ts --mode prod",
     "dev": "tsx watch src/index.ts --mode dev",
-    "start": "tsx src/index.ts --mode prod"
+    "start": "tsx src/index.ts --mode prod",
+    "migrate": "tsx src/scripts/migrate.ts",
+    "migrate:prod": "tsx src/scripts/migrate.ts --prod"
   },
   "keywords": [],
   "author": "",

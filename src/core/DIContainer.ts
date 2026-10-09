@@ -9,12 +9,19 @@ import { FinanceService } from "../services/finance.service";
 import { FinanceController } from "../controllers/finance.controller";
 import { ServicesController } from "../controllers/services.controller";
 import { TripsController } from "../controllers/trips.controller";
+import { ExpenseRepository } from "../repositories/expense.repository";
+import { ExpensesService } from "../services/expenses.service";
+import { ExpensesController } from "../controllers/expenses.controller";
 
 class DIContainer {
   private static tripRepository: TripRepository;
   private static serviceRepository: ServiceRepository;
   private static userRepository: UserRepository;
   private static financeRepository: FinanceRepository;
+
+  private static expenseRepository: ExpenseRepository;
+  private static expensesService: ExpensesService;
+  private static expensesController: ExpensesController;
 
   private static tripService: TripService;
   private static servicesService: ServicesService;
@@ -108,6 +115,27 @@ class DIContainer {
       this.tripsController = new TripsController(this.getTripService());
     }
     return this.tripsController;
+  }
+
+  static getExpenseRepository(): ExpenseRepository {
+    if (!this.expenseRepository) {
+      this.expenseRepository = new ExpenseRepository();
+    }
+    return this.expenseRepository;
+  }
+
+  static getExpensesService(): ExpensesService {
+    if (!this.expensesService) {
+      this.expensesService = new ExpensesService(this.getExpenseRepository());
+    }
+    return this.expensesService;
+  }
+
+  static getExpensesController(): ExpensesController {
+    if (!this.expensesController) {
+      this.expensesController = new ExpensesController(this.getExpensesService());
+    }
+    return this.expensesController;
   }
 
   static reset(): void {

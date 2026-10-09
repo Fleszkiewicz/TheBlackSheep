@@ -92,6 +92,7 @@ export class TripsController {
       const {
         apellido,
         valor_total,
+        valor_total_usd,
         destino,
         fecha,
         servicios,
@@ -129,6 +130,7 @@ export class TripsController {
       const tripData: CreateTripDTO = {
         apellido,
         valor_total,
+        valor_total_usd,
         destino,
         fecha_ida: parsedFechaIda,
         fecha_vuelta: parsedFechaVuelta,
@@ -158,6 +160,7 @@ export class TripsController {
       const {
         apellido,
         valor_total,
+        valor_total_usd,
         destino,
         servicios,
         moneda,
@@ -208,6 +211,7 @@ export class TripsController {
       const tripData: UpdateTripDTO = {
         apellido,
         valor_total,
+        valor_total_usd,
         destino,
         fecha: parsedFecha,
         fecha_ida: parsedFechaIda,

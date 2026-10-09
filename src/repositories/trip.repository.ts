@@ -25,7 +25,7 @@ export class TripRepository implements ITripRepository {
     // Execute SP
     const results = await QueryExecutor.executeStoredProcedure<any>(
       "obtener_viajes",
-      [filter, limit, offset, month, year],
+      [filter, limit, offset, month, year, null],
       { expectResultSets: true },
       conn,
     );
@@ -93,7 +93,7 @@ export class TripRepository implements ITripRepository {
       "insertar_viaje",
       [
         data.apellido,
-        data.valor_total,
+        data.valor_total ?? 0,
         data.destino,
         this.toDateString(data.fecha),
         this.toDateString(data.fecha_ida),
@@ -119,6 +119,7 @@ export class TripRepository implements ITripRepository {
         id,
         data.apellido ?? null,
         data.valor_total ?? null,
+        data.valor_total_usd ?? null,
         data.destino ?? null,
         data.fecha ? this.toDateString(data.fecha) : null,
         data.fecha_ida ? this.toDateString(data.fecha_ida) : null,
