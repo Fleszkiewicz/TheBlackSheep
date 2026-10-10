@@ -9,7 +9,7 @@ import { summaryResponse } from "../utils/utils";
 import logger from "../config/logger.config";
 
 export class FinanceService {
-  constructor(private financeRepository: FinanceRepository) {}
+  constructor(private financeRepository: FinanceRepository) { }
 
   async getFinanceSummary(
     query: FinanceSummaryQueryDTO
@@ -42,7 +42,6 @@ export class FinanceService {
       query.anio,
       query.moneda ?? null
     );
-    console.log(summary);
     const data = summaryResponse(summary);
 
     return data;

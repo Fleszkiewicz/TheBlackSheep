@@ -14,7 +14,6 @@ interface ErrorOptions {
   statusCode?: number;
 }
 
-const date = new Date();
 
 export class ResponseBuilder {
   static success<T>(options: SuccessOptions<T>) {
@@ -25,7 +24,7 @@ export class ResponseBuilder {
       message,
       data,
       ...(meta && { meta }),
-      timestamp: datetimeUtc3(date),
+      timestamp: datetimeUtc3(),
     };
   }
 
@@ -38,7 +37,7 @@ export class ResponseBuilder {
       ...(code && { code }),
       ...(statusCode && { statusCode }),
       ...(errors && { errors }),
-      timestamp: datetimeUtc3(date),
+      timestamp: datetimeUtc3(),
     };
   }
 
@@ -61,7 +60,7 @@ export class ResponseBuilder {
       success: true,
       message,
       data,
-      timestamp: datetimeUtc3(date),
+      timestamp: datetimeUtc3(),
     };
   }
 
@@ -73,7 +72,7 @@ export class ResponseBuilder {
       success: true,
       message,
       data,
-      timestamp: datetimeUtc3(date),
+      timestamp: datetimeUtc3(),
     };
   }
 
@@ -81,7 +80,7 @@ export class ResponseBuilder {
     return {
       success: true,
       message,
-      timestamp: datetimeUtc3(date),
+      timestamp: datetimeUtc3(),
     };
   }
 
@@ -107,7 +106,7 @@ export class ResponseBuilder {
   }
 
   static message(message: string) {
-    return { message, timestamp: datetimeUtc3(date) };
+    return { message, timestamp: datetimeUtc3() };
   }
 
   static paginatedWithLinks<T>(
@@ -120,15 +119,13 @@ export class ResponseBuilder {
     };
 
     if (pagination.hasNextPage) {
-      links.next = `${baseUrl}?page=${pagination.currentPage + 1}&limit=${
-        pagination.limit
-      }`;
+      links.next = `${baseUrl}?page=${pagination.currentPage + 1}&limit=${pagination.limit
+        }`;
     }
 
     if (pagination.hasPreviousPage) {
-      links.prev = `${baseUrl}?page=${pagination.currentPage - 1}&limit=${
-        pagination.limit
-      }`;
+      links.prev = `${baseUrl}?page=${pagination.currentPage - 1}&limit=${pagination.limit
+        }`;
     }
 
     links.first = `${baseUrl}?page=1&limit=${pagination.limit}`;
@@ -138,7 +135,7 @@ export class ResponseBuilder {
       data,
       pagination,
       links,
-      timestamp: datetimeUtc3(date),
+      timestamp: datetimeUtc3(),
     };
   }
 }

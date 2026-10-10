@@ -70,7 +70,6 @@ export class TripService {
     );
 
     const pagination = ResponseBuilder.buildPagination(page, limit, total);
-    console.log(data);
     return {
       data,
       pagination,

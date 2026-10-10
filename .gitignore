@@ -43,3 +43,8 @@ coverage/
 # Temporal
 *.tmp
 *.temp
+
+# Dumps con datos de clientes: NUNCA versionar
+backup*.sql
+*bkp*.sql
+routines_prod.sql

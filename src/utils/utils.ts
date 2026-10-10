@@ -75,7 +75,7 @@ export function summaryResponse(
   return grouped;
 }
 
-export function datetimeUtc3(date: Date): string {
-  date.setUTCHours(date.getUTCHours() - 3);
-  return date.toISOString();
+export function datetimeUtc3(date: Date = new Date()): string {
+  // No modifica el objeto recibido: crea uno nuevo
+  return new Date(date.getTime() - 3 * 60 * 60 * 1000).toISOString();
 }
