@@ -252,4 +252,47 @@ export class TripsController {
       next(error);
     }
   };
+
+  cancelTrip = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { tid: tripId } = req.params;
+      const motivo = parseOptionalString(req.body?.motivo);
+
+      if (!motivo) {
+        throw ErrorFactory.badRequest("El motivo de la cancelación es obligatorio");
+      }
+
+      const result = await this.tripService.cancelTrip(tripId, motivo);
+
+      res
+        .status(200)
+        .json(ResponseBuilder.updated(result, "Viaje cancelado exitosamente"));
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  revertTripCancellation = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { tid: tripId } = req.params;
+
+      const result = await this.tripService.revertTripCancellation(tripId);
+
+      res
+        .status(200)
+        .json(
+          ResponseBuilder.updated(result, "Cancelación revertida exitosamente"),
+        );
+    } catch (error) {
+      next(error);
+    }
+  };
 }

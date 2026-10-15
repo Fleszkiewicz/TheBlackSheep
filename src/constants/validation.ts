@@ -1,7 +1,7 @@
 export const VALIDATION = {
   TRIP: {
     DESTINO_VALUES: ["internacional", "nacional"] as const,
-    ESTADOS: ["pendiente", "finalizado"] as const,
+    ESTADOS: ["pendiente", "en espera", "en curso", "finalizado", "cancelado"] as const,
     APELLIDO_MIN_LENGTH: 2,
     APELLIDO_MAX_LENGTH: 50,
   },

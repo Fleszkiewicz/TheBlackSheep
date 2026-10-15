@@ -1,4 +1,4 @@
-import { PagadoPorType, DestinoType } from "../constants/validation";
+import { PagadoPorType, DestinoType, EstadoType } from "../constants/validation";
 
 export interface CreateTripDTO {
   apellido: string;
@@ -46,7 +46,11 @@ export interface UpdateServiceInTripDTO {
 
 export interface TripResponseDTO {
   id: string;
-  estado: "pendiente" | "finalizado";
+  estado: EstadoType;
+  cancelado?: 0 | 1;
+  motivo_cancelacion?: string | null;
+  fecha_cancelacion?: Date | null;
+  es_legado?: 0 | 1;
   fecha: Date;
   fecha_ida: Date;
   fecha_vuelta: Date;
@@ -54,10 +58,17 @@ export interface TripResponseDTO {
   destino: DestinoType;
   apellido: string;
   valor_total: number;
+  valor_total_usd?: number | null;
   ganancia: number;
+  ganancia_usd?: number | null;
   costo: number;
+  costo_usd?: number | null;
   servicios: ServiceInTripDTO[];
   cotizacion: number;
+}
+
+export interface CancelTripDTO {
+  motivo: string;
 }
 
 export interface ServiceInTripDTO {

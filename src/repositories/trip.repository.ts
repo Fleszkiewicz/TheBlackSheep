@@ -145,4 +145,32 @@ export class TripRepository implements ITripRepository {
 
     return result.id;
   }
+
+  async cancel(
+    id: string,
+    reason: string,
+    conn?: PoolConnection,
+  ): Promise<number> {
+    return QueryExecutor.executeUpdate(
+      `UPDATE viaje
+       SET cancelado = 1,
+           motivo_cancelacion = ?,
+           fecha_cancelacion = UTC_TIMESTAMP() - INTERVAL 3 HOUR
+       WHERE id = ? AND cancelado = 0`,
+      [reason, id],
+      conn,
+    );
+  }
+
+  async revertCancel(id: string, conn?: PoolConnection): Promise<number> {
+    return QueryExecutor.executeUpdate(
+      `UPDATE viaje
+       SET cancelado = 0,
+           motivo_cancelacion = NULL,
+           fecha_cancelacion = NULL
+       WHERE id = ? AND cancelado = 1`,
+      [id],
+      conn,
+    );
+  }
 }

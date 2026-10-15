@@ -1,7 +1,7 @@
 import { Router } from "express";
 import DIContainer from "../core/DIContainer";
 import { validateRequest } from "../middlewares/validateRequest";
-import { tripDeleteSchema, tripPostSchema } from "../middlewares/schemas/trips";
+import { tripDeleteSchema, tripPostSchema, tripCancelSchema } from "../middlewares/schemas/trips";
 
 const router = Router();
 
@@ -310,6 +310,65 @@ router.delete(
   tripDeleteSchema,
   validateRequest,
   DIContainer.getTripsController().deleteTrip
+);
+
+/**
+ * @swagger
+ * /api/trips/{tid}/cancel:
+ *   post:
+ *     summary: Cancelar un viaje
+ *     description: Marca el viaje como cancelado con un motivo. Se excluye de Finanzas.
+ *     tags: [Viajes]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/TripIdParam'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [motivo]
+ *             properties:
+ *               motivo:
+ *                 type: string
+ *                 maxLength: 255
+ *     responses:
+ *       200:
+ *         description: Viaje cancelado exitosamente
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+router.post(
+  "/:tid/cancel",
+  tripCancelSchema,
+  validateRequest,
+  DIContainer.getTripsController().cancelTrip,
+);
+
+/**
+ * @swagger
+ * /api/trips/{tid}/revert-cancel:
+ *   post:
+ *     summary: Revertir la cancelación de un viaje
+ *     description: Quita la marca de cancelado. El viaje vuelve al estado que le corresponde.
+ *     tags: [Viajes]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/TripIdParam'
+ *     responses:
+ *       200:
+ *         description: Cancelación revertida exitosamente
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ */
+router.post(
+  "/:tid/revert-cancel",
+  tripDeleteSchema,
+  validateRequest,
+  DIContainer.getTripsController().revertTripCancellation,
 );
 
 export default router;

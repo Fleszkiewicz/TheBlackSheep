@@ -199,6 +199,44 @@ export class TripService {
     return { id: deletedId };
   }
 
+  async cancelTrip(id: string, motivo: string): Promise<{ id: string }> {
+    logger.info("Cancelling trip", { tripId: id });
+
+    const trip = await this.tripRepository.findById(id);
+    if (!trip) {
+      throw ErrorFactory.notFound("Viaje no encontrado");
+    }
+    if (trip.cancelado === 1) {
+      throw ErrorFactory.conflict("El viaje ya está cancelado");
+    }
+
+    await TransactionManager.execute(async (conn) => {
+      await this.tripRepository.cancel(id, motivo, conn);
+    });
+
+    logger.info("Trip cancelled successfully", { tripId: id });
+    return { id };
+  }
+
+  async revertTripCancellation(id: string): Promise<{ id: string }> {
+    logger.info("Reverting trip cancellation", { tripId: id });
+
+    const trip = await this.tripRepository.findById(id);
+    if (!trip) {
+      throw ErrorFactory.notFound("Viaje no encontrado");
+    }
+    if (trip.cancelado !== 1) {
+      throw ErrorFactory.conflict("El viaje ya no está cancelado");
+    }
+
+    await TransactionManager.execute(async (conn) => {
+      await this.tripRepository.revertCancel(id, conn);
+    });
+
+    logger.info("Trip cancellation reverted", { tripId: id });
+    return { id };
+  }
+
   private validateTripDates(startDate: Date, endDate: Date): void {
     if (!validateDate(startDate)) {
       throw ErrorFactory.badRequest("Fecha de ida inválida");

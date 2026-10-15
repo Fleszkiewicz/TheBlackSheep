@@ -67,8 +67,45 @@ const tripDeleteSchemaValidator: Schema = {
       bail: true,
     },
     trim: true,
+    isLength: {
+      options: { min: 1, max: 6 },
+      errorMessage: "El ID del viaje no es válido",
+    },
   },
 };
+
+const tripCancelSchemaValidator: Schema = {
+  tid: {
+    in: ["params"],
+    isString: {
+      errorMessage: "El ID del viaje debe ser una cadena de texto",
+      bail: true,
+    },
+    trim: true,
+    isLength: {
+      options: { min: 1, max: 6 },
+      errorMessage: "El ID del viaje no es válido",
+    },
+  },
+  motivo: {
+    in: ["body"],
+    isString: {
+      errorMessage: "El motivo debe ser una cadena de texto",
+      bail: true,
+    },
+    trim: true,
+    notEmpty: {
+      errorMessage: "El motivo de la cancelación es obligatorio",
+      bail: true,
+    },
+    isLength: {
+      options: { max: 255 },
+      errorMessage: "El motivo no puede superar los 255 caracteres",
+    },
+  },
+};
+
 export const tripPostSchema = checkSchema(tripPostSchemaValidator);
 export const tripPatchSchema = checkSchema(tripPatchSchemaValidator);
 export const tripDeleteSchema = checkSchema(tripDeleteSchemaValidator);
+export const tripCancelSchema = checkSchema(tripCancelSchemaValidator);

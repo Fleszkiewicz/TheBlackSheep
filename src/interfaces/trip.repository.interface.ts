@@ -20,6 +20,10 @@ export interface ITripRepository extends IBaseRepository {
     conn?: PoolConnection
   ): Promise<StoredProcedureResultWithTotal<TripResponseDTO>>;
 
+  cancel(id: string, reason: string, conn?: PoolConnection): Promise<number>;
+
+  revertCancel(id: string, conn?: PoolConnection): Promise<number>;
+
   findById(id: string, conn?: PoolConnection): Promise<TripResponseDTO | null>;
 
   create(
