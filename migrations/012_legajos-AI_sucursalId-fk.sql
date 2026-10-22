@@ -35,3 +35,32 @@ BEGIN
 END;;
 DELIMITER ;
 
+DROP TRIGGER IF EXISTS `trg_viaje_actualizar_legajo`;
+
+DELIMITER ;;
+CREATE TRIGGER `trg_viaje_actualizar_legajo` BEFORE UPDATE ON `viaje` FOR EACH ROW 
+BEGIN
+  DECLARE v_nuevo_prefijo VARCHAR(1);
+  DECLARE v_next_num INT;
+
+  -- Si la sucursal cambió respecto a la que tenía guardada...
+  IF NEW.sucursal_id <> OLD.sucursal_id THEN
+    
+    -- 1. Obtenemos el prefijo de la nueva sucursal ('B' o 'H')
+    SELECT prefijo INTO v_nuevo_prefijo 
+    FROM sucursal 
+    WHERE id = NEW.sucursal_id;
+
+    -- 2. Buscamos el siguiente número correlativo disponible exclusivamente en la NUEVA sucursal
+    SELECT COALESCE(MAX(CAST(SUBSTRING(v.legajo, 5) AS UNSIGNED)), 0) + 1 
+    INTO v_next_num 
+    FROM viaje v 
+    WHERE v.sucursal_id = NEW.sucursal_id;
+
+    -- 3. Asignamos automáticamente el nuevo legajo (ej: TBSH003)
+    SET NEW.legajo = CONCAT('TBS', v_nuevo_prefijo, LPAD(v_next_num, 3, '0'));
+    
+  END IF;
+END;;
+DELIMITER ;
+

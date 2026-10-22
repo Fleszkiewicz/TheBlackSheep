@@ -51,6 +51,8 @@ DELIMITER ;
 
 
 -- B. Actualizar Viaje (Permite actualizar datos y gestiona el recálculo de legajo si cambia de sucursal)
+DROP PROCEDURE IF EXISTS `actualizar_viaje`;
+
 DELIMITER ;;
 CREATE PROCEDURE `actualizar_viaje` (
   IN p_id INT,                        -- Recibimos el ID numérico interno para buscar sin errores
@@ -66,61 +68,24 @@ CREATE PROCEDURE `actualizar_viaje` (
   IN p_cotizacion DECIMAL(12,2)
 )
 BEGIN
-  DECLARE v_sucursal_actual TINYINT;
-  DECLARE v_nuevo_prefijo VARCHAR(1);
-  DECLARE v_next_num INT;
-  DECLARE v_nuevo_legajo VARCHAR(10);
+  -- Actualizamos los datos del viaje. 
+  -- Si p_sucursal_id cambia, el trigger 'trg_viaje_actualizar_legajo' se disparará 
+  -- automáticamente y recalculará el legajo por nosotros.
+  UPDATE viaje
+  SET
+      sucursal_id = p_sucursal_id,
+      apellido = IFNULL(p_apellido, apellido),
+      valor_total = IFNULL(p_valor_total, valor_total),
+      valor_total_usd = IFNULL(p_valor_total_usd, valor_total_usd),
+      destino = IFNULL(p_destino, destino),
+      moneda_id = IFNULL(p_moneda_id, moneda_id),
+      fecha_ida = IFNULL(p_fecha_ida, fecha_ida),
+      fecha_vuelta = IFNULL(p_fecha_vuelta, fecha_vuelta),
+      cotizacion = IFNULL(p_cotizacion, cotizacion),
+      fecha = IFNULL(p_fecha, fecha)
+  WHERE id = p_id;
 
-  -- 1. Consultamos cuál es la sucursal que tenía este viaje antes de actualizar
-  SELECT sucursal_id INTO v_sucursal_actual FROM viaje WHERE id = p_id;
-
-  -- 2. Si la sucursal cambió, calculamos un nuevo legajo independiente para la nueva sucursal
-  IF p_sucursal_id <> v_sucursal_actual THEN
-    -- Obtenemos el prefijo de la nueva sucursal ('B' o 'H')
-    SELECT prefijo INTO v_nuevo_prefijo FROM sucursal WHERE id = p_sucursal_id;
-
-    -- Buscamos el siguiente número correlativo disponible en la NUEVA sucursal
-    SELECT COALESCE(MAX(CAST(SUBSTRING(v.legajo, 5) AS UNSIGNED)), 0) + 1 
-    INTO v_next_num 
-    FROM viaje v 
-    WHERE v.sucursal_id = p_sucursal_id;
-
-    -- Armamos el nuevo legajo (ej: TBSH003)
-    SET v_nuevo_legajo = CONCAT('TBS', v_nuevo_prefijo, LPAD(v_next_num, 3, '0'));
-
-    -- Actualizamos incluyendo el cambio de legajo y sucursal
-    UPDATE viaje
-    SET
-        sucursal_id = p_sucursal_id,
-        legajo = v_nuevo_legajo,
-        apellido = IFNULL(p_apellido, apellido),
-        valor_total = IFNULL(p_valor_total, valor_total),
-        valor_total_usd = IFNULL(p_valor_total_usd, valor_total_usd),
-        destino = IFNULL(p_destino, destino),
-        moneda_id = IFNULL(p_moneda_id, moneda_id),
-        fecha_ida = IFNULL(p_fecha_ida, fecha_ida),
-        fecha_vuelta = IFNULL(p_fecha_vuelta, fecha_vuelta),
-        cotizacion = IFNULL(p_cotizacion, cotizacion),
-        fecha = IFNULL(p_fecha, fecha)
-    WHERE id = p_id;
-
-  ELSE
-    -- 3. Si la sucursal es la misma, actualizamos normal sin tocar el legajo
-    UPDATE viaje
-    SET
-        apellido = IFNULL(p_apellido, apellido),
-        valor_total = IFNULL(p_valor_total, valor_total),
-        valor_total_usd = IFNULL(p_valor_total_usd, valor_total_usd),
-        destino = IFNULL(p_destino, destino),
-        moneda_id = IFNULL(p_moneda_id, moneda_id),
-        fecha_ida = IFNULL(p_fecha_ida, fecha_ida),
-        fecha_vuelta = IFNULL(p_fecha_vuelta, fecha_vuelta),
-        cotizacion = IFNULL(p_cotizacion, cotizacion),
-        fecha = IFNULL(p_fecha, fecha)
-    WHERE id = p_id;
-  END IF;
-
-  -- Retornamos el legajo resultante como id
+  -- Retornamos el legajo resultante (sea el que ya tenía o el actualizado por el trigger)
   SELECT legajo AS id FROM viaje WHERE id = p_id;
 END;;
 DELIMITER ;
