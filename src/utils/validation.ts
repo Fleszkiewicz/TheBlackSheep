@@ -24,6 +24,7 @@ export function parseOptionalInt(
     throw ErrorFactory.badRequest(`El valor debe ser menor o igual a ${max}`);
   }
 
+
   return parsed;
 }
 
@@ -86,6 +87,9 @@ export function validateDateRange(
   if (startDate >= endDate) {
     return { valid: false, error: 'La fecha de inicio debe ser anterior a la fecha de fin' };
   }
+
+
+
 
   return { valid: true };
 }

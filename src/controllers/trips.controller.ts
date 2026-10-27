@@ -91,18 +91,8 @@ export class TripsController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const {
-        apellido,
-        valor_total,
-        valor_total_usd,
-        destino,
-        fecha,
-        servicios,
-        fecha_ida,
-        fecha_vuelta,
-        moneda,
-        cotizacion,
-      } = req.body;
+      const { apellido, valor_total, valor_total_usd, destino, fecha, servicios,
+        fecha_ida, fecha_vuelta, moneda, cotizacion, sucursal_id } = req.body;
 
       // Validar y parsear fechas
       const parsedFechaIda = new Date(fecha_ida);
@@ -133,6 +123,7 @@ export class TripsController {
         apellido,
         valor_total,
         valor_total_usd,
+        sucursal_id: Number(sucursal_id),
         destino,
         fecha_ida: parsedFechaIda,
         fecha_vuelta: parsedFechaVuelta,

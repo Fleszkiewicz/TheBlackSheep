@@ -102,6 +102,7 @@ export class TripService {
           apellido: data.apellido,
           valor_total: data.valor_total,
           valor_total_usd: data.valor_total_usd,
+          sucursal_id: data.sucursal_id,
           destino: data.destino,
           fecha: data.fecha,
           fecha_ida: data.fecha_ida,

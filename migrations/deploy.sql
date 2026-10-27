@@ -1,0 +1,12 @@
+-- ==========================================================
+-- DÍA DEL DEPLOY (completar a mano)
+-- ==========================================================
+-- a) Asignar sucursal a los viajes viejos (NO se toca su legajo):
+-- UPDATE viaje SET sucursal_id = 1 WHERE sucursal_id IS NULL AND legajo IN ('...', '...');
+-- UPDATE viaje SET sucursal_id = 2 WHERE sucursal_id IS NULL AND legajo IN ('...', '...');
+-- SELECT COUNT(*) FROM viaje WHERE sucursal_id IS NULL;   -- debe dar 0
+-- ALTER TABLE viaje MODIFY sucursal_id TINYINT NOT NULL;
+--
+-- b) Fijar el ÚLTIMO número usado en papel (no el siguiente):
+-- UPDATE sucursal_legajo_seq SET ultimo_numero = 87 WHERE sucursal_id = 1;
+-- UPDATE sucursal_legajo_seq SET ultimo_numero = 34 WHERE sucursal_id = 2;

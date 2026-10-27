@@ -48,6 +48,10 @@ const tripPostSchemaValidator: Schema = {
     },
     toFloat: true,
   },
+  sucursal_id: {
+    in: ["body"],
+    isIn: { options: [[1, 2]], errorMessage: "Sucursal inválida", bail: true },
+  },
 };
 
 const tripPatchSchemaValidator: Schema = {};

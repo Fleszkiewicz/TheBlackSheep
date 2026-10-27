@@ -4,7 +4,8 @@ export interface CreateTripDTO {
   apellido: string;
   fecha: Date;
   valor_total: number;
-  valor_total_usd?: number | null;
+  valor_total_usd?: number;
+  sucursal_id: number;
   destino: DestinoType;
   fecha_ida: Date;
   fecha_vuelta: Date;
@@ -16,7 +17,7 @@ export interface CreateTripDTO {
 export interface UpdateTripDTO {
   apellido?: string;
   valor_total?: number;
-  valor_total_usd?: number | null;
+  valor_total_usd?: number;
   fecha?: Date;
   destino?: DestinoType;
   fecha_ida?: Date;
