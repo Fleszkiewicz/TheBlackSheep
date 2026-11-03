@@ -52,6 +52,20 @@ const tripPostSchemaValidator: Schema = {
     in: ["body"],
     isIn: { options: [[1, 2]], errorMessage: "Sucursal inválida", bail: true },
   },
+  nombre: {
+    in: ["body"],
+    isString: { errorMessage: "El nombre debe ser una cadena de texto", bail: true },
+    trim: true,
+    notEmpty: { errorMessage: "El nombre es obligatorio", bail: true },
+    isLength: { options: { max: 50 }, errorMessage: "El nombre no puede superar los 50 caracteres" },
+  },
+  pago: {
+    in: ["body"],
+    isIn: {
+      options: [["contado_efectivo", "contado_transferencia", "cuotas", "financiacion"]],
+      errorMessage: "Forma de pago inválida",
+    },
+  },
 };
 
 const tripPatchSchemaValidator: Schema = {};
@@ -72,7 +86,7 @@ const tripDeleteSchemaValidator: Schema = {
     },
     trim: true,
     isLength: {
-      options: { min: 1, max: 6 },
+      options: { min: 1, max: 20 },
       errorMessage: "El ID del viaje no es válido",
     },
   },
@@ -87,7 +101,7 @@ const tripCancelSchemaValidator: Schema = {
     },
     trim: true,
     isLength: {
-      options: { min: 1, max: 6 },
+      options: { min: 1, max: 20 },
       errorMessage: "El ID del viaje no es válido",
     },
   },

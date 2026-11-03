@@ -97,6 +97,8 @@ export class TripRepository implements ITripRepository {
         this.toDateString(data.fecha), this.toDateString(data.fecha_ida),
         this.toDateString(data.fecha_vuelta), data.moneda, data.cotizacion ?? null,
         data.sucursal_id,
+        data.nombre ?? null,
+        data.pago ?? null,
       ],
       { expectSingleRow: true },
       conn,
@@ -118,7 +120,10 @@ export class TripRepository implements ITripRepository {
         data.fecha ? this.toDateString(data.fecha) : null,
         data.fecha_ida ? this.toDateString(data.fecha_ida) : null,
         data.fecha_vuelta ? this.toDateString(data.fecha_vuelta) : null,
-        data.moneda ?? null, data.cotizacion ?? null,
+        data.moneda ?? null,
+        data.cotizacion ?? null,
+        data.nombre ?? null,
+        data.pago ?? null,
       ],
       { expectSingleRow: true },
       conn,
@@ -148,7 +153,7 @@ export class TripRepository implements ITripRepository {
        SET cancelado = 1,
            motivo_cancelacion = ?,
            fecha_cancelacion = UTC_TIMESTAMP() - INTERVAL 3 HOUR
-       WHERE id = ? AND cancelado = 0`,
+       WHERE legajo = ? AND cancelado = 0`,
       [reason, id],
       conn,
     );
@@ -160,7 +165,7 @@ export class TripRepository implements ITripRepository {
        SET cancelado = 0,
            motivo_cancelacion = NULL,
            fecha_cancelacion = NULL
-       WHERE id = ? AND cancelado = 1`,
+       WHERE legajo = ? AND cancelado = 1`,
       [id],
       conn,
     );

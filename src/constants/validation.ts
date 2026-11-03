@@ -1,6 +1,7 @@
 export const VALIDATION = {
   TRIP: {
     DESTINO_VALUES: ["internacional", "nacional"] as const,
+    PAGO_VALUES: ["contado_efectivo", "contado_transferencia", "cuotas", "financiacion"] as const,
     ESTADOS: ["pendiente", "en espera", "en curso", "finalizado", "cancelado"] as const,
     APELLIDO_MIN_LENGTH: 2,
     APELLIDO_MAX_LENGTH: 50,
@@ -30,5 +31,6 @@ export const VALIDATION = {
 
 export type DestinoType = (typeof VALIDATION.TRIP.DESTINO_VALUES)[number];
 export type EstadoType = (typeof VALIDATION.TRIP.ESTADOS)[number];
-export type PagadoPorType =
-  (typeof VALIDATION.SERVICE.PAGADO_POR_VALUES)[number];
+export type PagadoPorType = (typeof VALIDATION.SERVICE.PAGADO_POR_VALUES)[number];
+export type PagoType = (typeof VALIDATION.TRIP.PAGO_VALUES)[number];
+

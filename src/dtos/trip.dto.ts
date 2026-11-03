@@ -1,11 +1,13 @@
-import { PagadoPorType, DestinoType, EstadoType } from "../constants/validation";
+import { PagadoPorType, DestinoType, EstadoType, PagoType } from "../constants/validation";
 
 export interface CreateTripDTO {
+  nombre: string;
   apellido: string;
   fecha: Date;
   valor_total: number;
   valor_total_usd?: number;
   sucursal_id: number;
+  pago: PagoType;
   destino: DestinoType;
   fecha_ida: Date;
   fecha_vuelta: Date;
@@ -15,10 +17,12 @@ export interface CreateTripDTO {
 }
 
 export interface UpdateTripDTO {
+  nombre?: string;
   apellido?: string;
   valor_total?: number;
   valor_total_usd?: number;
   fecha?: Date;
+  pago?: PagoType;
   destino?: DestinoType;
   fecha_ida?: Date;
   fecha_vuelta?: Date;
@@ -56,7 +60,9 @@ export interface TripResponseDTO {
   fecha_ida: Date;
   fecha_vuelta: Date;
   moneda: string;
+  pago: PagoType | null;
   destino: DestinoType;
+  nombre: string | null;
   apellido: string;
   valor_total: number;
   valor_total_usd?: number | null;

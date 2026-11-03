@@ -92,7 +92,7 @@ export class TripsController {
   ): Promise<void> => {
     try {
       const { apellido, valor_total, valor_total_usd, destino, fecha, servicios,
-        fecha_ida, fecha_vuelta, moneda, cotizacion, sucursal_id } = req.body;
+        fecha_ida, fecha_vuelta, moneda, cotizacion, sucursal_id, nombre, pago } = req.body;
 
       // Validar y parsear fechas
       const parsedFechaIda = new Date(fecha_ida);
@@ -131,6 +131,8 @@ export class TripsController {
         cotizacion,
         fecha: parsedFecha,
         servicios,
+        nombre,
+        pago,
       };
 
       const result = await this.tripService.createTrip(tripData);
@@ -161,6 +163,8 @@ export class TripsController {
         fecha,
         fecha_ida,
         fecha_vuelta,
+        nombre,
+        pago,
       } = req.body;
 
       let parsedFecha: Date | undefined;
@@ -212,6 +216,8 @@ export class TripsController {
         moneda,
         cotizacion,
         servicios,
+        nombre,
+        pago,
       };
 
       const result = await this.tripService.updateTrip(tripId, tripData);

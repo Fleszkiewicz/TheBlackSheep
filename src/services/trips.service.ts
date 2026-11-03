@@ -109,6 +109,8 @@ export class TripService {
           fecha_vuelta: data.fecha_vuelta,
           moneda: data.moneda,
           cotizacion: data.cotizacion,
+          nombre: data.nombre,
+          pago: data.pago,
         },
         conn,
       );
@@ -163,6 +165,8 @@ export class TripService {
           fecha_vuelta: data.fecha_vuelta,
           moneda: data.moneda,
           cotizacion: data.cotizacion,
+          nombre: data.nombre,
+          pago: data.pago,
         },
         conn,
       );
