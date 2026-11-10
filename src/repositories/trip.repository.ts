@@ -93,12 +93,13 @@ export class TripRepository implements ITripRepository {
     const result = await QueryExecutor.executeStoredProcedure<any>(
       "insertar_viaje",
       [
-        data.apellido, data.valor_total, data.valor_total_usd ?? 0, data.destino,
+        data.valor_total, data.valor_total_usd ?? 0, data.destino,
         this.toDateString(data.fecha), this.toDateString(data.fecha_ida),
         this.toDateString(data.fecha_vuelta), data.moneda, data.cotizacion ?? null,
-        data.sucursal_id,
-        data.nombre ?? null,
-        data.pago ?? null,
+        data.sucursal_id, data.pago ?? null,
+        JSON.stringify(data.pasajeros),
+        JSON.stringify(data.destinos ?? []),
+
       ],
       { expectSingleRow: true },
       conn,
@@ -115,15 +116,14 @@ export class TripRepository implements ITripRepository {
     const result = await QueryExecutor.executeStoredProcedure<any>(
       "actualizar_viaje",
       [
-        id, data.apellido ?? null, data.valor_total ?? null, data.valor_total_usd ?? null,
-        data.destino ?? null,
+        id, data.valor_total ?? null, data.valor_total_usd ?? null, data.destino ?? null,
         data.fecha ? this.toDateString(data.fecha) : null,
         data.fecha_ida ? this.toDateString(data.fecha_ida) : null,
         data.fecha_vuelta ? this.toDateString(data.fecha_vuelta) : null,
-        data.moneda ?? null,
-        data.cotizacion ?? null,
-        data.nombre ?? null,
-        data.pago ?? null,
+        data.moneda ?? null, data.cotizacion ?? null, data.pago ?? null,
+        data.pasajeros ? JSON.stringify(data.pasajeros) : null,
+        data.destinos ? JSON.stringify(data.destinos) : null,
+        data.servicios_sin_destino ? JSON.stringify(data.servicios_sin_destino) : null,
       ],
       { expectSingleRow: true },
       conn,

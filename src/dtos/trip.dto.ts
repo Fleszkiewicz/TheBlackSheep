@@ -1,8 +1,7 @@
-import { PagadoPorType, DestinoType, EstadoType, PagoType } from "../constants/validation";
+import { PagadoPorType, DestinoType, EstadoType, PagoType, CategoriaEdadType } from "../constants/validation";
 
 export interface CreateTripDTO {
-  nombre: string;
-  apellido: string;
+  pasajeros: PasajeroDTO[];
   fecha: Date;
   valor_total: number;
   valor_total_usd?: number;
@@ -13,12 +12,11 @@ export interface CreateTripDTO {
   fecha_vuelta: Date;
   moneda: number;
   cotizacion?: number | null;
-  servicios: CreateServiceDTO[];
+  destinos: DestinoDTO[];
 }
 
 export interface UpdateTripDTO {
-  nombre?: string;
-  apellido?: string;
+  pasajeros?: PasajeroDTO[];
   valor_total?: number;
   valor_total_usd?: number;
   fecha?: Date;
@@ -28,7 +26,8 @@ export interface UpdateTripDTO {
   fecha_vuelta?: Date;
   moneda?: number;
   cotizacion?: number | null;
-  servicios?: UpdateServiceInTripDTO[];
+  destinos?: DestinoDTO[];
+  servicios_sin_destino?: DestinoServicioDTO[];
 }
 
 export interface CreateServiceDTO {
@@ -62,8 +61,7 @@ export interface TripResponseDTO {
   moneda: string;
   pago: PagoType | null;
   destino: DestinoType;
-  nombre: string | null;
-  apellido: string;
+  pasajeros?: PasajeroDTO[];
   valor_total: number;
   valor_total_usd?: number | null;
   ganancia: number;
@@ -72,6 +70,8 @@ export interface TripResponseDTO {
   costo_usd?: number | null;
   servicios: ServiceInTripDTO[];
   cotizacion: number;
+  destinos?: DestinoDTO[];
+  servicios_sin_destino?: DestinoServicioDTO[];
 }
 
 export interface CancelTripDTO {
@@ -108,4 +108,35 @@ export interface PaginationMetaDTO {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
   limit: number;
+}
+
+export interface PasajeroDTO {
+  pasajero_id?: number | null;
+  es_titular: boolean;
+  dni?: string | null;
+  nombre?: string | null;
+  apellido: string;
+  email?: string | null;
+  telefono?: string | null;
+  pasaporte?: string | null;
+  vencimiento_dni?: string | null;
+  vencimiento_pasaporte?: string | null;
+  categoria_edad?: CategoriaEdadType | null;
+}
+
+export interface DestinoServicioDTO {
+  servicio_tipo_id: number;
+  valor: number;
+  moneda_id: number;
+  cotizacion?: number | null;
+  pagado_por: PagadoPorType;
+  observacion?: string | null;
+}
+
+export interface DestinoDTO {
+  destino_id?: number | null;
+  destino: string;
+  fecha_desde?: string | null;
+  fecha_hasta?: string | null;
+  servicios: DestinoServicioDTO[];
 }

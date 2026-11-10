@@ -6,6 +6,9 @@ import {
   validateDate,
   validateDateRange,
   parseOptionalString,
+  parsePasajeros,
+  parseDestinos,
+  parseServicios,
 } from "../utils/validation";
 import { ErrorFactory } from "../errors/errorFactory";
 import {
@@ -91,8 +94,8 @@ export class TripsController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const { apellido, valor_total, valor_total_usd, destino, fecha, servicios,
-        fecha_ida, fecha_vuelta, moneda, cotizacion, sucursal_id, nombre, pago } = req.body;
+      const { valor_total, valor_total_usd, destino, fecha, destinos,
+        fecha_ida, fecha_vuelta, moneda, cotizacion, sucursal_id, pasajeros, pago } = req.body;
 
       // Validar y parsear fechas
       const parsedFechaIda = new Date(fecha_ida);
@@ -108,7 +111,8 @@ export class TripsController {
       if (!validateDate(parsedFechaVuelta)) {
         throw ErrorFactory.badRequest("Fecha de vuelta inválida");
       }
-
+      const pasajerosOk = parsePasajeros(pasajeros);
+      const destinosOk = destinos === undefined ? [] : parseDestinos(destinos, { ida: fecha_ida, vuelta: fecha_vuelta });
       const dateValidation = validateDateRange(
         parsedFechaIda,
         parsedFechaVuelta,
@@ -120,7 +124,7 @@ export class TripsController {
       }
 
       const tripData: CreateTripDTO = {
-        apellido,
+        pasajeros: pasajerosOk,
         valor_total,
         valor_total_usd,
         sucursal_id: Number(sucursal_id),
@@ -130,8 +134,7 @@ export class TripsController {
         moneda,
         cotizacion,
         fecha: parsedFecha,
-        servicios,
-        nombre,
+        destinos: destinosOk,
         pago,
       };
 
@@ -153,17 +156,17 @@ export class TripsController {
     try {
       const { tid: tripId } = req.params;
       const {
-        apellido,
+        pasajeros,
         valor_total,
         valor_total_usd,
         destino,
-        servicios,
+        destinos,
+        servicios_sin_destino,
         moneda,
         cotizacion,
         fecha,
         fecha_ida,
         fecha_vuelta,
-        nombre,
         pago,
       } = req.body;
 
@@ -204,9 +207,13 @@ export class TripsController {
           );
         }
       }
-
+      const pasajerosOk = pasajeros === undefined ? undefined : parsePasajeros(pasajeros);
+      const destinosOk =
+        destinos === undefined ? undefined : parseDestinos(destinos, { ida: fecha_ida, vuelta: fecha_vuelta });
+      const sinDestinoOk =
+        servicios_sin_destino === undefined ? undefined : parseServicios(servicios_sin_destino, "sin destino");
       const tripData: UpdateTripDTO = {
-        apellido,
+        pasajeros: pasajerosOk,
         valor_total,
         valor_total_usd,
         destino,
@@ -215,8 +222,8 @@ export class TripsController {
         fecha_vuelta: parsedFechaVuelta,
         moneda,
         cotizacion,
-        servicios,
-        nombre,
+        destinos: destinosOk,
+        servicios_sin_destino: sinDestinoOk,
         pago,
       };
 

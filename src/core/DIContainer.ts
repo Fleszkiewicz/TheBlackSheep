@@ -12,6 +12,9 @@ import { TripsController } from "../controllers/trips.controller";
 import { ExpenseRepository } from "../repositories/expense.repository";
 import { ExpensesService } from "../services/expenses.service";
 import { ExpensesController } from "../controllers/expenses.controller";
+import { PasajeroRepository } from "../repositories/pasajero.repository";
+import { PasajerosService } from "../services/pasajeros.service";
+import { PasajerosController } from "../controllers/pasajeros.controller";
 
 class DIContainer {
   private static tripRepository: TripRepository;
@@ -31,6 +34,31 @@ class DIContainer {
   private static financeController: FinanceController;
   private static servicesController: ServicesController;
   private static tripsController: TripsController;
+
+  private static pasajeroRepository: PasajeroRepository;
+  private static pasajerosService: PasajerosService;
+  private static pasajerosController: PasajerosController;
+
+  static getPasajeroRepository(): PasajeroRepository {
+    if (!this.pasajeroRepository) {
+      this.pasajeroRepository = new PasajeroRepository();
+    }
+    return this.pasajeroRepository;
+  }
+
+  static getPasajerosService(): PasajerosService {
+    if (!this.pasajerosService) {
+      this.pasajerosService = new PasajerosService(this.getPasajeroRepository());
+    }
+    return this.pasajerosService;
+  }
+
+  static getPasajerosController(): PasajerosController {
+    if (!this.pasajerosController) {
+      this.pasajerosController = new PasajerosController(this.getPasajerosService());
+    }
+    return this.pasajerosController;
+  }
 
   static getTripRepository(): TripRepository {
     if (!this.tripRepository) {
@@ -64,7 +92,6 @@ class DIContainer {
     if (!this.tripService) {
       this.tripService = new TripService(
         this.getTripRepository(),
-        this.getServiceRepository()
       );
     }
     return this.tripService;

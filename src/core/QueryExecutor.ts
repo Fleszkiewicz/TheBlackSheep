@@ -52,6 +52,16 @@ export class QueryExecutor {
         throw error;
       }
 
+      const sqlError = error as { sqlState?: string; sqlMessage?: string };
+      if (sqlError?.sqlState === "45000" && sqlError.sqlMessage) {
+        logger.warn("Query rejected by database rule", {
+          errorMessage,
+          error: sqlError.sqlMessage,
+          duration: `${duration}ms`,
+        });
+        throw ErrorFactory.badRequest(sqlError.sqlMessage);
+      }
+
       logger.error("Query error (Unexpected)", {
         errorMessage,
         error: error instanceof Error ? error.message : "Unknown error",

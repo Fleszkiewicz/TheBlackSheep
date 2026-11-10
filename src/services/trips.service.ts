@@ -1,5 +1,4 @@
 import { ITripRepository } from "../interfaces/trip.repository.interface";
-import { IServiceRepository } from "../interfaces/service.repository.interface";
 import {
   CreateTripDTO,
   UpdateTripDTO,
@@ -17,10 +16,10 @@ import {
   validateDateRange,
 } from "../utils/validation";
 import logger from "../config/logger.config";
+
 export class TripService {
   constructor(
     private tripRepository: ITripRepository,
-    private serviceRepository: IServiceRepository,
   ) { }
 
   async getTrips(query: GetTripsQueryDTO): Promise<PaginatedTripsResponseDTO> {
@@ -91,15 +90,13 @@ export class TripService {
   async createTrip(data: CreateTripDTO): Promise<{ id: string }> {
     this.validateTripDates(data.fecha_ida, data.fecha_vuelta);
 
-    logger.info("Creating trip", {
-      apellido: data.apellido,
-      servicesCount: data.servicios.length,
-    });
+    const titular = data.pasajeros.find((p) => p.es_titular);
+    logger.info("Creating trip", { apellido: titular?.apellido, destinosCount: data.destinos.length });
 
     const tripId = await TransactionManager.execute(async (conn) => {
       const id = await this.tripRepository.create(
         {
-          apellido: data.apellido,
+          pasajeros: data.pasajeros,
           valor_total: data.valor_total,
           valor_total_usd: data.valor_total_usd,
           sucursal_id: data.sucursal_id,
@@ -109,34 +106,11 @@ export class TripService {
           fecha_vuelta: data.fecha_vuelta,
           moneda: data.moneda,
           cotizacion: data.cotizacion,
-          nombre: data.nombre,
           pago: data.pago,
+          destinos: data.destinos,
         },
         conn,
       );
-
-      const serviceIds = data.servicios.map((s) => s.id);
-      const duplicateIds = serviceIds.filter(
-        (id, index) => serviceIds.indexOf(id) !== index,
-      );
-      if (duplicateIds.length > 0) {
-        throw ErrorFactory.badRequest(
-          `Servicios duplicados: ${[...new Set(duplicateIds)].join(", ")}`,
-        );
-      }
-
-      for (const service of data.servicios) {
-        await this.serviceRepository.createForTrip(
-          id,
-          service.id,
-          service.valor,
-          service.pagado_por,
-          service.moneda,
-          service.cotizacion ?? null,
-          service.observacion ?? null,
-          conn,
-        );
-      }
 
       logger.info("Trip created successfully", { tripId: id });
       return id;
@@ -156,7 +130,7 @@ export class TripService {
       const updatedId = await this.tripRepository.update(
         id,
         {
-          apellido: data.apellido,
+          pasajeros: data.pasajeros,
           valor_total: data.valor_total,
           valor_total_usd: data.valor_total_usd,
           destino: data.destino,
@@ -165,26 +139,12 @@ export class TripService {
           fecha_vuelta: data.fecha_vuelta,
           moneda: data.moneda,
           cotizacion: data.cotizacion,
-          nombre: data.nombre,
           pago: data.pago,
+          destinos: data.destinos,
+          servicios_sin_destino: data.servicios_sin_destino,
         },
         conn,
       );
-
-      if (data.servicios && data.servicios.length > 0) {
-        for (const service of data.servicios) {
-          await this.serviceRepository.updateForTrip(
-            updatedId,
-            service.id,
-            service.valor,
-            service.pagado_por,
-            service.moneda,
-            service.cotizacion,
-            service.observacion,
-            conn,
-          );
-        }
-      }
 
       logger.info("Trip updated successfully", { tripId: updatedId });
       return updatedId;

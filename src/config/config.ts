@@ -31,7 +31,7 @@ const config = {
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_USER: process.env.DB_USER,
   DB_PORT: process.env.DB_PORT,
-  CLIENT_URL: process.env.CLIENT_URL,
+  CLIENT_URL: process.env.CLIENT_URL || "http://localhost:5173",
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,

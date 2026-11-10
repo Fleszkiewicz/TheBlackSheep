@@ -1,18 +1,7 @@
 import { checkSchema, Schema } from "express-validator";
 
 const tripPostSchemaValidator: Schema = {
-  apellido: {
-    in: ["body"],
-    isString: {
-      errorMessage: "El apellido debe ser una cadena de texto",
-      bail: true,
-    },
-    notEmpty: {
-      errorMessage: "El apellido es obligatorio",
-      bail: true,
-    },
-    trim: true,
-  },
+
   valor_total: {
     in: ["body"],
     isInt: {
@@ -52,19 +41,17 @@ const tripPostSchemaValidator: Schema = {
     in: ["body"],
     isIn: { options: [[1, 2]], errorMessage: "Sucursal inválida", bail: true },
   },
-  nombre: {
-    in: ["body"],
-    isString: { errorMessage: "El nombre debe ser una cadena de texto", bail: true },
-    trim: true,
-    notEmpty: { errorMessage: "El nombre es obligatorio", bail: true },
-    isLength: { options: { max: 50 }, errorMessage: "El nombre no puede superar los 50 caracteres" },
-  },
+
   pago: {
     in: ["body"],
     isIn: {
       options: [["contado_efectivo", "contado_transferencia", "cuotas", "financiacion"]],
       errorMessage: "Forma de pago inválida",
     },
+  },
+  pasajeros: {
+    in: ["body"],
+    isArray: { options: { min: 1 }, errorMessage: "Debe haber al menos un pasajero" },
   },
 };
 

@@ -17,6 +17,7 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import { setupSwagger } from "./swagger.config";
 import expensesRoutes from "../routes/expenses.routes";
+import pasajerosRoutes from "../routes/pasajeros.routes";
 
 export const app = express();
 
@@ -109,6 +110,7 @@ app.use("/api/trips", isAuthenticate, tripsRoutes);
 app.use("/api/finance", isAuthenticate, financeRoutes);
 app.use("/api/services", isAuthenticate, servicesRoutes);
 app.use("/api/expenses", isAuthenticate, expensesRoutes);
+app.use("/api/pasajeros", isAuthenticate, pasajerosRoutes);
 
 // ✅ Manejo de errores al final
 app.use(errorHandler);
