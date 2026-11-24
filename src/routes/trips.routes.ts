@@ -2,6 +2,10 @@ import { Router } from "express";
 import DIContainer from "../core/DIContainer";
 import { validateRequest } from "../middlewares/validateRequest";
 import { tripDeleteSchema, tripPostSchema, tripCancelSchema } from "../middlewares/schemas/trips";
+import { ArchivosController } from "../controllers/archivos.controller";
+import { archivoService } from "../services/archivos.service";
+import { DistribucionController } from "../controllers/distribucion.controller";
+import { distribucionService } from "../services/distribucion.service";
 
 const router = Router();
 
@@ -370,5 +374,18 @@ router.post(
   validateRequest,
   DIContainer.getTripsController().revertTripCancellation,
 );
+
+const archivos = new ArchivosController(archivoService);
+
+router.get("/:tid/archivos", archivos.list);
+router.post("/:tid/archivos/presign", archivos.presign);
+router.post("/:tid/archivos", archivos.register);
+router.get("/:tid/archivos/:aid/url", archivos.downloadUrl);
+router.delete("/:tid/archivos/:aid", archivos.remove);
+
+const distribucion = new DistribucionController(distribucionService);
+
+router.get("/:tid/distribucion", distribucion.list);
+router.put("/:tid/distribucion/:socio", distribucion.setAbonado);
 
 export default router;

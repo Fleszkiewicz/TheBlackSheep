@@ -16,6 +16,8 @@ import {
   validateDateRange,
 } from "../utils/validation";
 import logger from "../config/logger.config";
+import { archivoService } from "./archivos.service";
+
 
 export class TripService {
   constructor(
@@ -156,11 +158,17 @@ export class TripService {
   async deleteTrip(id: string): Promise<{ id: string }> {
     logger.info("Deleting trip", { tripId: id });
 
+    // las filas de viaje_archivo se van por cascada, asi que leemos las keys antes
+    const keys = await archivoService.keysByLegajo(id);
+
     const deletedId = await TransactionManager.execute(async (conn) => {
       return await this.tripRepository.delete(id, conn);
     });
 
-    logger.info("Trip deleted successfully", { tripId: deletedId });
+    // recien con el viaje ya eliminado se borran los objetos (si alguno falla solo queda logueado)
+    await archivoService.deleteObjects(keys);
+
+    logger.info("Trip deleted successfully", { tripId: deletedId, archivos: keys.length });
     return { id: deletedId };
   }
 
