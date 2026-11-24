@@ -94,6 +94,7 @@ export interface GetTripsQueryDTO {
   month?: number;
   year?: number;
   search?: string;
+  sucursal?: number;
 }
 
 export interface PaginatedTripsResponseDTO {

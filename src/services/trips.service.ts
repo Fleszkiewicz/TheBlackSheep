@@ -59,7 +59,9 @@ export class TripService {
 
     const search = query.search ? sanitizeString(query.search, 50) || null : null;
 
-    logger.info("Fetching trips", { filter, limit, offset, month, year, search });
+    const sucursal = query.sucursal ?? null;
+
+    logger.info("Fetching trips", { filter, limit, offset, month, year, search, sucursal });
 
     const { data, total } = await this.tripRepository.findAll(
       filter,
@@ -68,6 +70,7 @@ export class TripService {
       month,
       year,
       search,
+      sucursal,
     );
 
     const pagination = ResponseBuilder.buildPagination(page, limit, total);

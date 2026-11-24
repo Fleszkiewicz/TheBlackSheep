@@ -45,6 +45,11 @@ export class TripsController {
       const month = parseOptionalInt(req.query.month as string, 1, 12);
       const year = parseOptionalInt(req.query.year as string, 2000, 2100);
 
+      // Solo se aceptan sucursales reales; cualquier otro valor = sin filtro (1 = Baradero, 2 = Hurlingham)
+      const sucursalParam = req.query.sucursal;
+      const sucursal =
+        sucursalParam === "baradero" ? 1 : sucursalParam === "hurlingham" ? 2 : undefined;
+
       const query: GetTripsQueryDTO = {
         filter: filter ?? undefined,
         limit,
@@ -52,6 +57,7 @@ export class TripsController {
         month: month ?? undefined,
         year: year ?? undefined,
         search: search ?? undefined,
+        sucursal,
       };
 
       const result = await this.tripService.getTrips(query);

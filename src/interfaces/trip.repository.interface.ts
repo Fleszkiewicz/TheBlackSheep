@@ -17,6 +17,7 @@ export interface ITripRepository extends IBaseRepository {
     month: number | null,
     year: number | null,
     search: string | null,
+    sucursal: number | null,
     conn?: PoolConnection
   ): Promise<StoredProcedureResultWithTotal<TripResponseDTO>>;
 
