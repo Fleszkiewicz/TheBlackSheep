@@ -7,9 +7,10 @@
     "dev:dev": "tsx watch src/index.ts --mode dev",
     "dev:prod": "tsx watch src/index.ts --mode prod",
     "dev": "tsx watch src/index.ts --mode dev",
-    "start": "tsx src/index.ts --mode prod",
+    "start": "node --enable-source-maps dist/index.js --mode prod",
     "migrate": "tsx src/scripts/migrate.ts",
-    "migrate:prod": "tsx src/scripts/migrate.ts --prod"
+    "migrate:prod": "tsx src/scripts/migrate.ts --prod",
+    "build": "esbuild src/index.ts --bundle --platform=node --format=esm --target=node20 --packages=external --sourcemap --outfile=dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +29,7 @@
     "@types/swagger-ui-express": "^4.1.8",
     "@types/winston": "^2.4.4",
     "cross-env": "^7.0.3",
+    "esbuild": "^0.25.5",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   },
