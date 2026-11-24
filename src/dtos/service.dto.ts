@@ -1,31 +1,5 @@
-import { PagadoPorType } from "../constants/validation";
-
 /**
- * DTO para crear un servicio para un viaje
- */
-export interface CreateServiceForTripDTO {
-  viaje_id: string;
-  servicio_id: number;
-  valor: number;
-  pagado_por: PagadoPorType;
-  moneda: number;
-  cotizacion?: number;
-  observacion?: string;
-}
-
-/**
- * DTO para actualizar un servicio de un viaje
- */
-export interface UpdateServiceForTripDTO {
-  valor?: number;
-  pagado_por?: PagadoPorType;
-  moneda?: number;
-  cotizacion?: number;
-  observacion?: string;
-}
-
-/**
- * DTO de respuesta para un servicio
+ * DTO de respuesta para un tipo de servicio
  */
 export interface ServiceResponseDTO {
   id: number;

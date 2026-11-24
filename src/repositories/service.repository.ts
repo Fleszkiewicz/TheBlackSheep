@@ -3,10 +3,9 @@ import { db } from "../db/db";
 import { IServiceRepository } from "../interfaces/service.repository.interface";
 import { ServiceResponseDTO } from "../dtos/service.dto";
 import { QueryExecutor } from "../core/QueryExecutor";
-import { PagadoPorType } from "../constants/validation";
 
 /**
- * Repositorio para operaciones de base de datos relacionadas con servicios
+ * Repositorio de tipos de servicio (servicio_tipo)
  */
 export class ServiceRepository implements IServiceRepository {
   async getConnection(): Promise<PoolConnection> {
@@ -17,52 +16,6 @@ export class ServiceRepository implements IServiceRepository {
     return await QueryExecutor.executeSelect<ServiceResponseDTO>(
       "SELECT * FROM servicio_tipo",
       [],
-      conn,
-    );
-  }
-
-  async createForTrip(
-    tripId: string,
-    serviceId: number,
-    amount: number,
-    payFor: PagadoPorType,
-    currency: number,
-    rateChange: number | null,
-    observation: string | null,
-    conn?: PoolConnection,
-  ): Promise<void> {
-    await QueryExecutor.executeInsert(
-      "INSERT INTO servicio (viaje_id, servicio_tipo_id, valor, pagado_por, moneda_id, cotizacion, observacion) VALUES ((SELECT id FROM viaje WHERE legajo = ?), ?, ?, ?, ?, ?, ?)",
-      [tripId, serviceId, amount, payFor, currency, rateChange, observation],
-      conn,
-    );
-  }
-
-  async updateForTrip(
-    tripId: string,
-    serviceId: number,
-    amount: number,
-    payFor: PagadoPorType,
-    currency: number,
-    rateChange: number | null,
-    observation: string | null,
-    conn?: PoolConnection,
-  ): Promise<void> {
-    await QueryExecutor.executeUpdate(
-      "UPDATE servicio SET valor = IFNULL(?, valor), pagado_por = IFNULL(?, pagado_por), moneda_id = IFNULL(?, moneda_id), cotizacion = IFNULL(?, cotizacion), observacion = IFNULL(?, observacion) WHERE viaje_id = (SELECT id FROM viaje WHERE legajo = ?) AND servicio_tipo_id = ?",
-      [amount, payFor, currency, rateChange, observation, tripId, serviceId],
-      conn,
-    );
-  }
-
-  async deleteForTrip(
-    tripId: string,
-    serviceId: number,
-    conn?: PoolConnection,
-  ): Promise<void> {
-    await QueryExecutor.executeDelete(
-      "DELETE FROM servicio WHERE servicio_tipo_id = ? AND viaje_id = (SELECT id FROM viaje WHERE legajo = ?)",
-      [serviceId, tripId],
       conn,
     );
   }
