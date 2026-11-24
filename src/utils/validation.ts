@@ -96,6 +96,18 @@ export function validateDateRange(
   return { valid: true };
 }
 
+/**
+ * Deja cada palabra con la primera letra en mayuscula y el resto en minuscula
+ * ("franco LESZKIEWICZ" -> "Franco Leszkiewicz"; tambien tras guion, apostrofe o punto).
+ */
+export function titleCaseName(value: string | null): string | null {
+  if (!value) return value;
+  return value
+    .replace(/\s+/g, " ")
+    .toLocaleLowerCase("es-AR")
+    .replace(/(^|[\s'’\-.])(\p{L})/gu, (_m, sep: string, ch: string) => sep + ch.toLocaleUpperCase("es-AR"));
+}
+
 const optStr = (v: unknown, max: number, label: string): string | null => {
   if (v === undefined || v === null) return null;
   const s = String(v).trim();
@@ -129,10 +141,11 @@ export function parsePasajeros(input: unknown): PasajeroDTO[] {
     }
     const p = raw as Record<string, unknown>;
 
-    const apellido = optStr(p.apellido, 50, "El apellido");
-    if (!apellido) {
+    const apellidoRaw = optStr(p.apellido, 50, "El apellido");
+    if (!apellidoRaw) {
       throw ErrorFactory.badRequest(`El apellido del pasajero ${i + 1} es obligatorio`);
     }
+    const apellido = titleCaseName(apellidoRaw) as string;
 
     const categoria = optStr(p.categoria_edad, 10, "La categoría de edad");
     if (
@@ -153,7 +166,7 @@ export function parsePasajeros(input: unknown): PasajeroDTO[] {
       pasajero_id: pasajeroId,
       es_titular: p.es_titular === true || p.es_titular === "true" || p.es_titular === 1,
       dni: optStr(p.dni, 20, "El DNI")?.replace(/[.\s]/g, "") || null,
-      nombre: optStr(p.nombre, 50, "El nombre"),
+      nombre: titleCaseName(optStr(p.nombre, 50, "El nombre")),
       apellido,
       email: optStr(p.email, 100, "El email"),
       telefono: optStr(p.telefono, 30, "El teléfono"),
