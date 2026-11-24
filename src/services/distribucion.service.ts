@@ -3,7 +3,7 @@ import { db } from "../db/db";
 import { ErrorFactory } from "../errors/errorFactory";
 import logger from "../config/logger.config";
 
-export const SOCIOS = ["pablo", "soledad", "marian"] as const;
+export const SOCIOS = ["pablo", "soledad", "mariana"] as const;
 export type Socio = (typeof SOCIOS)[number];
 
 export const isSocio = (v: unknown): v is Socio =>
