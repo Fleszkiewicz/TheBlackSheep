@@ -189,10 +189,16 @@ describe("ciclo de vida de un expediente", () => {
     const sinMotivo = await request(app).post(`/api/trips/${legajo}/cancel`).set(auth).send({});
     expect(sinMotivo.status).toBe(422);
     expect(sinMotivo.body.error).toBeTruthy();
-    expect((await request(app).post(`/api/trips/${legajo}/cancel`).set(auth).send({ motivo: "Prueba automática" })).status).toBe(200);
-    expect((await request(app).get(`/api/trips/${legajo}`).set(auth)).body.data.estado).toBe("cancelado");
+    const textoLibre = await request(app).post(`/api/trips/${legajo}/cancel`).set(auth).send({ categoria: "Prueba automática" });
+    expect(textoLibre.status).toBe(422);
+    expect((await request(app).post(`/api/trips/${legajo}/cancel`).set(auth).send({ categoria: "cambio_planes" })).status).toBe(200);
+    const cancelado = (await request(app).get(`/api/trips/${legajo}`).set(auth)).body.data;
+    expect(cancelado.estado).toBe("cancelado");
+    expect(cancelado.categoria_cancelacion).toBe("cambio_planes");
     expect((await request(app).post(`/api/trips/${legajo}/revert-cancel`).set(auth)).status).toBe(200);
-    expect((await request(app).get(`/api/trips/${legajo}`).set(auth)).body.data.estado).not.toBe("cancelado");
+    const revertido = (await request(app).get(`/api/trips/${legajo}`).set(auth)).body.data;
+    expect(revertido.estado).not.toBe("cancelado");
+    expect(revertido.categoria_cancelacion).toBeNull();
   });
 
   it("elimina el expediente", async () => {
@@ -210,6 +216,34 @@ describe("finanzas", () => {
   });
   it("sin año -> 400", async () => {
     expect((await request(app).get("/api/finance").set(auth)).status).toBe(400);
+  });
+});
+
+describe("dashboard", () => {
+  const vistas = {
+    expedientes: ["kpis", "estados", "sucursales", "evolucion", "motivos"],
+    productos: ["kpis", "destinos", "servicios", "tipos", "edades"],
+    finanzas: ["kpis", "mensual", "pagos", "monedas", "socios"],
+    expensas: ["kpis", "mensual", "sucursales"],
+  };
+
+  it.each(Object.entries(vistas))("%s devuelve KPI y series", async (vista, sets) => {
+    const res = await request(app).get(`/api/dashboard/${vista}`).query({ anio: 2026, sucursal: "baradero" }).set(auth);
+    expect(res.status).toBe(200);
+    expect(Object.keys(res.body.data).sort()).toEqual([...sets].sort());
+    expect(typeof res.body.data.kpis).toBe("object");
+  });
+
+  it("los importes llegan como número y la evolución ignora el mes", async () => {
+    const anual = (await request(app).get("/api/dashboard/finanzas").query({ anio: 2026 }).set(auth)).body.data;
+    const mes = (await request(app).get("/api/dashboard/finanzas").query({ anio: 2026, mes: 1 }).set(auth)).body.data;
+    expect(typeof anual.kpis.facturacion_ars).toBe("number");
+    expect(mes.mensual).toEqual(anual.mensual);
+  });
+
+  it("sin año -> 400; sección inexistente -> 404", async () => {
+    expect((await request(app).get("/api/dashboard/finanzas").set(auth)).status).toBe(400);
+    expect((await request(app).get("/api/dashboard/otra").query({ anio: 2026 }).set(auth)).status).toBe(404);
   });
 });
 

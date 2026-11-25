@@ -1,4 +1,5 @@
 import { PoolConnection } from "mysql2/promise";
+import { CategoriaCancelacionType } from "../constants/validation";
 import {
   CreateTripDTO,
   UpdateTripDTO,
@@ -21,7 +22,7 @@ export interface ITripRepository extends IBaseRepository {
     conn?: PoolConnection
   ): Promise<StoredProcedureResultWithTotal<TripResponseDTO>>;
 
-  cancel(id: string, reason: string, conn?: PoolConnection): Promise<number>;
+  cancel(id: string, categoria: CategoriaCancelacionType, conn?: PoolConnection): Promise<number>;
 
   revertCancel(id: string, conn?: PoolConnection): Promise<number>;
 

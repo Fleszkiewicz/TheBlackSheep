@@ -1,4 +1,5 @@
 import { PoolConnection } from "mysql2/promise";
+import { CategoriaCancelacionType } from "../constants/validation";
 import { db } from "../db/db";
 import { ITripRepository } from "../interfaces/trip.repository.interface";
 import {
@@ -146,16 +147,18 @@ export class TripRepository implements ITripRepository {
 
   async cancel(
     id: string,
-    reason: string,
+    categoria: CategoriaCancelacionType,
     conn?: PoolConnection,
   ): Promise<number> {
+    // motivo_cancelacion (texto libre) queda solo para cancelaciones anteriores a la migración 025
     return QueryExecutor.executeUpdate(
       `UPDATE viaje
        SET cancelado = 1,
-           motivo_cancelacion = ?,
+           categoria_cancelacion = ?,
+           motivo_cancelacion = NULL,
            fecha_cancelacion = UTC_TIMESTAMP() - INTERVAL 3 HOUR
        WHERE legajo = ? AND cancelado = 0`,
-      [reason, id],
+      [categoria, id],
       conn,
     );
   }
@@ -164,6 +167,7 @@ export class TripRepository implements ITripRepository {
     return QueryExecutor.executeUpdate(
       `UPDATE viaje
        SET cancelado = 0,
+           categoria_cancelacion = NULL,
            motivo_cancelacion = NULL,
            fecha_cancelacion = NULL
        WHERE legajo = ? AND cancelado = 1`,

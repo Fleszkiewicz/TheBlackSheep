@@ -9,7 +9,7 @@ import {
 import { TransactionManager } from "../core/TransactionManager";
 import { ResponseBuilder } from "../core/ResponseBuilder";
 import { ErrorFactory } from "../errors/errorFactory";
-import { VALIDATION } from "../constants/validation";
+import { VALIDATION, CategoriaCancelacionType } from "../constants/validation";
 import {
   sanitizeString,
   validateDate,
@@ -175,7 +175,7 @@ export class TripService {
     return { id: deletedId };
   }
 
-  async cancelTrip(id: string, motivo: string): Promise<{ id: string }> {
+  async cancelTrip(id: string, categoria: CategoriaCancelacionType): Promise<{ id: string }> {
     logger.info("Cancelling trip", { tripId: id });
 
     const trip = await this.tripRepository.findById(id);
@@ -187,7 +187,7 @@ export class TripService {
     }
 
     await TransactionManager.execute(async (conn) => {
-      await this.tripRepository.cancel(id, motivo, conn);
+      await this.tripRepository.cancel(id, categoria, conn);
     });
 
     logger.info("Trip cancelled successfully", { tripId: id });

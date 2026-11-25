@@ -18,6 +18,7 @@ import helmet from "helmet";
 import { setupSwagger } from "./swagger.config";
 import expensesRoutes from "../routes/expenses.routes";
 import pasajerosRoutes from "../routes/pasajeros.routes";
+import dashboardRoutes from "../routes/dashboard.routes";
 
 export const app = express();
 
@@ -111,6 +112,7 @@ app.use("/api/finance", isAuthenticate, financeRoutes);
 app.use("/api/services", isAuthenticate, servicesRoutes);
 app.use("/api/expenses", isAuthenticate, expensesRoutes);
 app.use("/api/pasajeros", isAuthenticate, pasajerosRoutes);
+app.use("/api/dashboard", isAuthenticate, dashboardRoutes);
 
 // ✅ Manejo de errores al final
 app.use(errorHandler);

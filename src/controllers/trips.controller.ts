@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { VALIDATION, CategoriaCancelacionType } from "../constants/validation";
 import { PAGINATION } from "../constants/pagination";
 import {
   parseOptionalInt,
@@ -270,13 +271,13 @@ export class TripsController {
   ): Promise<void> => {
     try {
       const { tid: tripId } = req.params;
-      const motivo = parseOptionalString(req.body?.motivo);
+      const categoria = req.body?.categoria;
 
-      if (!motivo) {
-        throw ErrorFactory.badRequest("El motivo de la cancelación es obligatorio");
+      if (!VALIDATION.TRIP.CATEGORIA_CANCELACION_VALUES.includes(categoria)) {
+        throw ErrorFactory.badRequest("El motivo de la cancelación no es válido");
       }
 
-      const result = await this.tripService.cancelTrip(tripId, motivo);
+      const result = await this.tripService.cancelTrip(tripId, categoria as CategoriaCancelacionType);
 
       res
         .status(200)

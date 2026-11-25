@@ -4,6 +4,15 @@ export const VALIDATION = {
     PAGO_VALUES: ["contado_efectivo", "contado_transferencia", "cuotas", "financiacion"] as const,
     CATEGORIA_EDAD_VALUES: ["infante", "menor", "adulto", "mayor"] as const,
     ESTADOS: ["pendiente", "en espera", "en curso", "finalizado", "cancelado"] as const,
+    CATEGORIA_CANCELACION_VALUES: [
+      "economicos",
+      "problemas_familiares",
+      "sin_respuesta",
+      "otra_agencia",
+      "cambio_planes",
+      "salud",
+      "otro",
+    ] as const,
     APELLIDO_MIN_LENGTH: 2,
     APELLIDO_MAX_LENGTH: 50,
   },
@@ -35,3 +44,4 @@ export type EstadoType = (typeof VALIDATION.TRIP.ESTADOS)[number];
 export type PagadoPorType = (typeof VALIDATION.SERVICE.PAGADO_POR_VALUES)[number];
 export type PagoType = (typeof VALIDATION.TRIP.PAGO_VALUES)[number];
 export type CategoriaEdadType = (typeof VALIDATION.TRIP.CATEGORIA_EDAD_VALUES)[number];
+export type CategoriaCancelacionType = (typeof VALIDATION.TRIP.CATEGORIA_CANCELACION_VALUES)[number];

@@ -1,4 +1,5 @@
 import { checkSchema, Schema } from "express-validator";
+import { VALIDATION } from "../../constants/validation";
 
 const tripPostSchemaValidator: Schema = {
 
@@ -92,20 +93,15 @@ const tripCancelSchemaValidator: Schema = {
       errorMessage: "El ID del viaje no es válido",
     },
   },
-  motivo: {
+  categoria: {
     in: ["body"],
-    isString: {
-      errorMessage: "El motivo debe ser una cadena de texto",
-      bail: true,
-    },
-    trim: true,
-    notEmpty: {
+    exists: {
       errorMessage: "El motivo de la cancelación es obligatorio",
       bail: true,
     },
-    isLength: {
-      options: { max: 255 },
-      errorMessage: "El motivo no puede superar los 255 caracteres",
+    isIn: {
+      options: [VALIDATION.TRIP.CATEGORIA_CANCELACION_VALUES],
+      errorMessage: "El motivo de la cancelación no es válido",
     },
   },
 };

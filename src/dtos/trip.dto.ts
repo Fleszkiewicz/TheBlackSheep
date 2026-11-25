@@ -1,4 +1,4 @@
-import { PagadoPorType, DestinoType, EstadoType, PagoType, CategoriaEdadType } from "../constants/validation";
+import { PagadoPorType, DestinoType, EstadoType, PagoType, CategoriaEdadType, CategoriaCancelacionType } from "../constants/validation";
 
 export interface CreateTripDTO {
   pasajeros: PasajeroDTO[];
@@ -52,6 +52,7 @@ export interface TripResponseDTO {
   id: string;
   estado: EstadoType;
   cancelado?: 0 | 1;
+  categoria_cancelacion?: CategoriaCancelacionType | null;
   motivo_cancelacion?: string | null;
   fecha_cancelacion?: Date | null;
   es_legado?: 0 | 1;
@@ -75,7 +76,7 @@ export interface TripResponseDTO {
 }
 
 export interface CancelTripDTO {
-  motivo: string;
+  categoria: CategoriaCancelacionType;
 }
 
 export interface ServiceInTripDTO {

@@ -321,7 +321,7 @@ router.delete(
  * /api/trips/{tid}/cancel:
  *   post:
  *     summary: Cancelar un viaje
- *     description: Marca el viaje como cancelado con un motivo. Se excluye de Finanzas.
+ *     description: Marca el viaje como cancelado con una categoría fija. Se excluye de Finanzas.
  *     tags: [Viajes]
  *     security:
  *       - BearerAuth: []
@@ -333,11 +333,11 @@ router.delete(
  *         application/json:
  *           schema:
  *             type: object
- *             required: [motivo]
+ *             required: [categoria]
  *             properties:
- *               motivo:
+ *               categoria:
  *                 type: string
- *                 maxLength: 255
+ *                 enum: [economicos, problemas_familiares, sin_respuesta, otra_agencia, cambio_planes, salud, otro]
  *     responses:
  *       200:
  *         description: Viaje cancelado exitosamente
